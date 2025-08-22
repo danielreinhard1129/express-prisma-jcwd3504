@@ -1,0 +1,23 @@
+Cara Pull Image
+- docker pull <nama-image>:<version>
+- docker pull postgres:latest
+
+Cara create container postgres
+- docker run --name <container_name> -e POSTGRES_PASSWORD=yourPassword -p <host_port>:<container_port> <image>:<version>
+- docker run --name postgres_container -e POSTGRES_PASSWORD=admin -p 6543:5432 postgres
+
+Cara mount volume ke container
+- docker run --name <container_name> -e POSTGRES_PASSWORD=yourPassword -p <host_port>:<container_port> -v postgres_volume:/var/lib/postgresql/data <image>:<version>
+- docker run --name postgres_container -e POSTGRES_PASSWORD=admin -p 6543:5432 -v postgres_volume:/var/lib/postgresql/data postgres
+
+Cara lihat container yg aktif
+- docker ps
+
+Cara lihat seluruh container 
+- docker ps -a
+
+Cara delete container
+- docker container rm <nama_container>
+
+1. docker run -d --name redis_container -p 6379:6379 redis
+2. docker run --name postgres_container -e POSTGRES_PASSWORD=admin -p 6543:5432 -v postgres_volume:/var/lib/postgresql/data postgres

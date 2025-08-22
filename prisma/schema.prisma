@@ -4,9 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
 }
 
 model Sample {
@@ -19,12 +19,73 @@ model Sample {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String        @unique
+  password     String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  events       Event[]
+  transactions Transaction[]
 
   @@map("users")
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  name        String   @unique
+  description String
+  category    String
+  startDate   DateTime
+  endDate     DateTime
+  thumbnail   String
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tickets   Ticket[]
+
+  @@map("events")
+}
+
+model Ticket {
+  id      Int    @id @default(autoincrement())
+  name    String
+  price   Int
+  stock   Int
+  eventId Int
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+
+  @@map("tickets")
+}
+
+model Transaction {
+  id           Int               @id @default(autoincrement())
+  uuid         String            @unique @default(uuid())
+  userId       Int
+  user         User              @relation(fields: [userId], references: [id])
+  status       TransactionStatus @default(WAITING_FOR_PAYMENT)
+  paymentProof String?
+  ticketId     Int
+  ticket       Ticket            @relation(fields: [ticketId], references: [id])
+  qty          Int
+  price        Int
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@map("transactions")
+}
+
+enum TransactionStatus {
+  WAITING_FOR_PAYMENT
+  WAITING_FOR_CONFIRMATION
+  PAID
+  REJECT
+  EXPIRED
 }

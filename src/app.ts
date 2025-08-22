@@ -4,6 +4,9 @@ import { PORT } from "./config/env";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { SampleRouter } from "./modules/sample/sample.router";
 import { AuthRouter } from "./modules/auth/auth.router";
+import { initScheduler } from "./scripts";
+import { TransactionRouter } from "./modules/transaction/transaction.router";
+import { initWorkers } from "./worker";
 
 export class App {
   app: Express;
@@ -13,6 +16,8 @@ export class App {
     this.configure();
     this.routes();
     this.handleError();
+    // initScheduler();
+    initWorkers();
   }
 
   private configure() {
@@ -23,9 +28,11 @@ export class App {
   private routes() {
     const sampleRouter = new SampleRouter();
     const authRouter = new AuthRouter();
+    const transactionRouter = new TransactionRouter();
 
     this.app.use("/samples", sampleRouter.getRouter());
     this.app.use("/auth", authRouter.getRouter());
+    this.app.use("/transactions", transactionRouter.getRouter());
   }
 
   private handleError() {
